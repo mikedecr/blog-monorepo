@@ -38,13 +38,17 @@ We can just import the blog source in one location, and use some scripting at th
 The source stays the source, and the website handles what it needs.
 Even in the extreme cases where we might need to inject new metadata into the rendered output (!) we can just handle this with a well-defined scripting routine at the website layer.
 
+Basically if the website imposes additional constraints on the source, then those constraints must be rule-based and thus can be handled programmatically.
+Let the computer handle it.
+
 
 ## Abstract requirements
 
-To be a member of the blog repo, a post only needs:
+Done correctly, any post can be a member of the blog monorepo as long as it has:
 
-- files that can generate markdown output when built
+- source files that are enough to generate markdown output when built
 - a build routine that we can invoke
 
-For now, we can get away with an assumption that the computational environment is built from the "conda family" and that rendering is done with `quarto render index.qmd`.
-More generally we could go the way of makefiles and abstract away these details completely---at that point depending only on `make`.
+For now, we can get away with an assumption that the computational environment is built from the "conda family" and that build routine is basically `conda run -p path/to/env quarto render path/to/index.qmd`
+More generally we could defer all responsibility for building to makefiles and abstract away those details completely.
+At that point, the only shared assumptions between the blog code and the surrounding website are availability of `make` and the awareness to use it.
