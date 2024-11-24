@@ -18,7 +18,7 @@ This granular model got the big points right:
 
 - **Posts are independent.**
   I don't need to version-control the development of one post in the same conceptual space as any other post.
-  And the website might want to keep some posts but not other.
+  And the website might want to display some posts but not others.
 - **Decouple the computational environments of separate posts.**
   The only computational environment that a post should be responsible for is _its own_.
   If post X requires some package, post Y should never care.
