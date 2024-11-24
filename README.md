@@ -5,6 +5,8 @@ A repository for holding all blog posts written under the `mikedecr` (profession
 
 ## Structure:
 
+Posts contained here may be...
+
 - plain text posts that don't need a special computing environment
 - submodules for richer posts that specify their own computational dependencies
 
