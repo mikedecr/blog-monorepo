@@ -1,0 +1,3 @@
+[submodule "nonflat-priors"]
+	path = nonflat-priors
+	url = git@github.com:mikedecr/post_nonflat-priors.git
