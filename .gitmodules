@@ -1,3 +1,6 @@
 [submodule "nonflat-priors"]
 	path = nonflat-priors
 	url = git@github.com:mikedecr/post_nonflat-priors.git
+[submodule "scrape-memoize-scum-data"]
+	path = scrape-memoize-scum-data
+	url = git@github.com:mikedecr/post_memo_scum.git
