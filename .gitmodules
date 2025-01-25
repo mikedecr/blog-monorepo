@@ -4,3 +4,6 @@
 [submodule "scrape-memoize-scum-data"]
 	path = scrape-memoize-scum-data
 	url = git@github.com:mikedecr/post_memo_scum.git
+[submodule "usable-research-repos"]
+	path = usable-research-repos
+	url = git@github.com:mikedecr/usable-repos.git
