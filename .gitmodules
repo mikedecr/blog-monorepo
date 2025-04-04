@@ -7,3 +7,6 @@
 [submodule "usable-research-repos"]
 	path = usable-research-repos
 	url = git@github.com:mikedecr/usable-repos.git
+[submodule "plain-language-median-voter"]
+	path = plain-language-median-voter
+	url = git@github.com:mikedecr/plain-language-median-voter.git
