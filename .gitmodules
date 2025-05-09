@@ -10,3 +10,6 @@
 [submodule "plain-language-median-voter"]
 	path = plain-language-median-voter
 	url = git@github.com:mikedecr/plain-language-median-voter.git
+[submodule "sugar-free-dict-union"]
+	path = sugar-free-dict-union
+	url = git@github.com:mikedecr/sugar-free-dict-union.git
