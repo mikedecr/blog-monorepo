@@ -19,3 +19,6 @@
 [submodule "function-composition-r"]
 	path = function-composition-r
 	url = git@github.com:mikedecr/post_composition.git
+[submodule "mandelbrot-recursive"]
+	path = mandelbrot-recursive
+	url = git@github.com:mikedecr/post_mandelbrot_iterative_recursive.git
