@@ -13,3 +13,6 @@
 [submodule "sugar-free-dict-union"]
 	path = sugar-free-dict-union
 	url = git@github.com:mikedecr/sugar-free-dict-union.git
+[submodule "purrrmutation-tests"]
+	path = purrrmutation-tests
+	url = git@github.com:mikedecr/purrrmutation-tests.git
