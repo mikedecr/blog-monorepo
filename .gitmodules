@@ -16,3 +16,6 @@
 [submodule "purrrmutation-tests"]
 	path = purrrmutation-tests
 	url = git@github.com:mikedecr/purrrmutation-tests.git
+[submodule "function-composition-r"]
+	path = function-composition-r
+	url = git@github.com:mikedecr/post_composition.git
