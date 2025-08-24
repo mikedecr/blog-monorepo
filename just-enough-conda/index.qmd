@@ -8,23 +8,28 @@ date: 2025-04-05
 
 Virtual environments seem to be a constant pain for researchers.
 Academics in particular seem to not really understand them, which causes a lot of startup pain when they want try out the Python language.
-The academics I used to roll with are heavy users of R, which has some environment management solutions (`renv` in particular), but they are not heavily used.
+The academics I used to roll with are heavy users of R, which has some environment management tools (`renv` in particular), but they are not heavily used.[^cran]
 Even in the industry world I see Python users complaining about environment pains.
 Stuff like, "broke my conda environment again...".
 
+[^cran]: Most R users survive on a combination of CRAN's blessings and hope, which is another way of saying, complete avoidance of env tooling and workflow.]
+
 This post will be a rapid-fire list of env-management practices that should ease a lot of these pains.
-I will focus on `conda` primarily because it is more versatile than `pip` and `uv`, which are focused primarily on installing Python packages from the [Python Package Index](https://pypi.org/).
-(For example, you can manage R environments with Conda. More detail on that below.)
-I use [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html), which behaves basically like conda but is smaller and faster.
-Many of the principles will still apply to the use of these other tools.
+
+I will focus on the `conda` package manager tool because Conda can do multi-language environment configuration,[^mamba] whereas `pip` and `uv` are primarily focused on Python-only dependency management.[^r-conda]
+But the principles discussed here generally apply to any major Python package manager.
+
+[^r-conda]: For example, you can manage R environments with Conda, which I do.
+
+[^mamba]: I personally use [micromamba](https://mamba.readthedocs.io/en/latest/user_guide/micromamba.html), which behaves basically like Conda but is smaller and faster.
 
 This post may evolve as I evolve my thoughts about what good practices are.
-But I have been using conda in a professional environment for 5 years now, and I think the information below is both:
+But I have been using conda in a professional environment for 5 years now, and I think the information here is both:
 
-- good enough for experienced users
-- efficient enough for total newcomers to adopt 100% of the advice here and feel like none of the effort is wasted
+- good enough that experienced users can endorse it.
+- efficient enough that total newcomers can adopt 100% of these tips and feel like none of the effort was wasted.
 
-If you are familiar with conda environments already you can skip around and get what you want out of this.
+If you are familiar with conda environments already, feel free to skip around and get what you want out of this.
 If you are totally new, reading in order will help you get onboarded.
 
 
@@ -47,80 +52,53 @@ This means you have to learn.
 
 ## What is an environment?
 
-An environment is sort of like a "scope" that defines which computational resources are available and where they come from.
+An environment is like a "scope" that defines which computational resources are available and how programs can find those resources.
+
+Stepping back.
 Your computer can contain many software tools on it, and those tools "live" in certain places in the computer.
 When you run some piece of software, and it needs to reach out to some other thing you have installed on your computer (such as a matrix multiplication library), how does the software know where to find that other program?
-When you install software, and it needs something on your computer, how does the software know where to find it?
+And are these programs compatible with each other?
 
-Environments are one way to manage which resources are available to certain processes at certain times.
+Environments are one way to manage which dependencies are available to your program.
 
-Let's demonstrate in the terminal.
+It is helpful to see this working in the terminal with an example.
 
-If I go into the terminal and I run the `R` command...
-
-```sh
-R
-```
-
-...the R interpreter program will open in the terminal.
-I would see something like this:
-
-```
-R version 4.3.3 (2024-02-29) -- "Angel Food Cake"
-Copyright (C) 2024 The R Foundation for Statistical Computing
-Platform: aarch64-apple-darwin20 (64-bit)
-
-R is free software and comes with ABSOLUTELY NO WARRANTY.
-You are welcome to redistribute it under certain conditions.
-Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
-
-R is a collaborative project with many contributors.
-Type 'contributors()' for more information and
-'citation()' on how to cite R or R packages in publications.
-
-Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for an HTML browser interface to help.
-Type 'q()' to quit R.
-
-R > 
-```
-
-So this program must be installed on my computer somehow.
-
-I can ask _where_ the program is installed.
+This current blog post is written in Quarto, and I use the Quarto CLI to render the post.
+If I open a terminal and ask if the `quarto` tool exists, the terminal shows me where it is finding that tool.
 
 ```sh
-which R
+which quarto
 
-# /usr/local/bin/R
+# /usr/local/bin/quarto
+
+quarto --version
+
+# 1.6.40
 ```
 
-This says the `R` command is actually going to execute the command `/usr/local/bin/R`, which is a application installed in my computer in that path.
-I can `ls` the directory and see that R is indeed installed there.
+This is saying that I have a `quarto` version 1.6.40 executable in the `/usr/local/bin` directory.
+
+That's nice.
+But I actually don't use this instance of `quarto` to build this post.
+I have a virtual environment for this post managed by [`pixi`](https://pixi.sh/latest/) (which is built atop Conda).
+This virtual environment has its own installation of `quarto`, which I keep because I don't want any changes to the global `quarto` that I install on my computer to break how I build _this specific blog post_.
+So I render this post _in this virtual environment_, and the environment will use the specific version of `quarto` that I lock down in this environment.
 
 ```sh
-# asks for only results containing "R" in the name
-ls /usr/local/bin | grep R
+pixi run which quarto
 
-# R
-# Rscript
+# /Users/michaeldecrescenzo/projects/site-hugo/submodules/blog-monorepo/just-enough-conda/.pixi/envs/default/bin/quarto
+
+pixi run quarto --version
+
+# 1.7.33
 ```
 
-However, _I have other computational environments on my computer._
-I can ask where R is installed in those environments.
-For example, if I `cd` to my website repo, I have a few environments that manage how I build some blog posts.
-I can ask where R is installed in those environments. 
+Every time I say `pixi run ...` I am running the following command in the environment that `pixi` governs.
+And because this environment is its own isolated thing inside my computer, the `quarto` executable in that environment is not the one in my computer's "default" scope.
 
-```sh
-cd ~/projects/site-hugo && micromamba run -p build/conda_envs/qmd/blog/scrape-memoize-scum-data which R     
-# /Users/michaeldecrescenzo/projects/site-hugo/build/conda_envs/qmd/blog/scrape-memoize-scum-data/bin/R
-```
+**tldr** An environment defines an ecosystem of dependencies that can be configured for _joint compatibility_, so that your software can be built and executed in a consistent and enduring way.
 
-This command says, "go to this directory, and then run the `which R` command in the environment defined at this path".
-And because that environment is its own isolated thing, the R interpreter in that environment is not the one in my computer's "global" scope.
-So the path that is printed to the console is R interpreter in that specific environment.
 
 ## Why you should use environments
 
@@ -137,7 +115,7 @@ Environments save you from all of this.
 But you _must_ use them intentionally to reap these benefits.
 
 
-## Use the terminal
+## Start in the terminal
 
 Although environments can be invoked by various GUI applications like VSCode or RStudio, I think there is no substitute for learning the fundamentals in the shell.
 The terminal is where you learn what environments actually are, and if it doesn't make sense in the terminal, it is unlikely to make sense in the GUI.
@@ -195,7 +173,7 @@ You should have one environment per project.
 Or more!
 Some projects require multiple environments.
 
-But you should never mix projects in one environment.
+But you should never mix multiple projects into one environment.
 
 
 ## Build environments into a local path
@@ -210,7 +188,7 @@ conda create -p path/to/env <list packages here>
 or if your environment is defined in a `yml` file (more on that later):
 
 ```sh
-conda env create -f path/to/file.yml -p path/to/env`
+conda env create -f path/to/file.yml -p path/to/env
 ```
 
 In both examples, the `-p path/to/env` argument says to build and store the environment at that path, instead of in some global "default" path that conda/mambda/micromamba sets up for you.
@@ -223,7 +201,7 @@ When you have environments floating around in the default global path, it is eas
 It is needless mental burden.
 
 You may find it helpful to mark these env paths as "private" directories however you wish (and add them to `.gitignore`).
-Some people like to put these environmenets in `.venv` (the `.` at the front of the name hides the directory) or in directories whose names are prefixed with an underscore.
+Some people like to put these environments in a `.venv` directory (the `.` at the front of the name hides the directory) or in directories whose names are prefixed with an underscore.
 I often do `_build/envs/env-name`:
 
 - `_build` contains many things that I might build, which includes environments but also other things like generated data or output of some other kind
@@ -240,19 +218,21 @@ When the env is "active" then all commands will be run in that environment, with
 So `which python` would give me a different answer after I activate an environment that contains a Python installation.
 
 But you don't have to activate the environment in order to run commands inside the environment.
-With conda/mamba/micromamba for example you can do `micromamba run -p path/to/env <insert cmd here>` in order to run the command in the environment defined at `path/to/env`.
+With conda/mamba/micromamba for example you can do `micromamba run -p path/to/env <insert cmd here>` in order to run the command in the environment defined at `path/to/env`.[^uv-run]
 This is helpful when writing scripts: you can explicitly invoke an environment for specific commands without relying on any background context.
 We saw examples of this above already.
 
-This can be especially useful in complex scenarios where you might have multiple environments in play.
-For example, when I build my website, my blog posts might have different computating environments (some use R code, some use Python code, some use none...).
+[^uv-run]: or `uv run <cmd>`, or `pixi run <cmd>`, and so on.
+
+This is useful in scenarios where you have multiple environments in play.
+For example, when I build my website, I also want to render any blog posts that may have changed, but those blog posts have their own computing environments (some use R code, some use Python code, some use none...).
 When I render my blog posts, I need to do a series of `micromamba run -p path/to/blog-specific-env quarto render path/to/specific-blog-post.qmd` to render each post in its matching environment.
-This may sound tedious, but:
+This may sound tedious at first, but
 
 - It is necessary to prevent the dependencies of multiple blog posts from clashing with one another.
 - it is actually "easy", because the blog posts and their environments are associated to each other in a config file.
-  So all the difficulty of the coordinated environments can be handled programmatically.
 
+So all the difficulty of the coordinated environments can be handled programmatically as long as you have done the proper organizational work.
 This is why it pays to be rigorous!
 When your system follows good rules, you can leverage the computer to do the correct thing, easily, even in complex situations.
 
@@ -315,6 +295,16 @@ If you don't use conda, other package managers have other ways of encoding depen
 Regardless of your choice of tool, you should do something like this.
 
 [^dep]: Didn't you hear? Pandas is deprecated.
+
+
+## Pin your dependencies
+
+If you have read this far, it should not be a huge surprise that you should pin your dependencies to the versions that you expect to consume in your project.
+If you know that you need some minimum version of a package to pick up a new feature, specify that in your environment recipe.
+
+This can be done to pin the maximum version of a package as well, in case new versions broke a feature that you needed to work.
+
+If you see someone complaining that they updated a package and now their code doesn't work, they didn't do this part right.
 
 
 ## Other quick tips:
