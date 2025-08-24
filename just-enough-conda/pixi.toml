@@ -1,0 +1,12 @@
+[project]
+authors = ["mikedecr <mgdecrescenzo@gmail.com>"]
+channels = ["conda-forge"]
+description = "Add a short description here"
+name = "just-enough-conda"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+quarto = ">=1.7.33,<2"
