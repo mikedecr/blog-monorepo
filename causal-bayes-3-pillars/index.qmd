@@ -116,7 +116,7 @@ These are called identification assumptions.
 
 Think of it in terms of data in groups.
 I don't observe unit $i$ in both $A=1$ and $A=0$, but I can observe a group of $A=1$ units and a group of $A=0$ units.
-Identifications assumptions are the requirements to make inferences about _expected individual differences_, $E[{\tau}_{i}] = E[Y_{i}(A=1) - Y_{i}(A=0)]$, which we can't observe, based on differences of group expectations, $\bar{\tau} = E[Y_{i}(A= 1)] - E[Y_{i}(A=0)]$ which we can observe.
+Identifications assumptions are the requirements to make inferences about _expected individual differences_, $E[\tau_{i}] = E[Y_{i}(A=1) - Y_{i}(A=0)]$, which we can't observe, based on differences of group expectations, $\bar{\tau} = E[Y_{i}(A= 1)] - E[Y_{i}(A=0)]$ which we can observe.
 With these assumptions in hand, we could refer to the unobservable treatment effect $E[\tau_{i}]$ as a _causal estimand_.
 
 Remember, causal estimands are still entities in the causal model.
