@@ -22,3 +22,6 @@
 [submodule "mandelbrot-recursive"]
 	path = mandelbrot-recursive
 	url = git@github.com:mikedecr/post_mandelbrot_iterative_recursive.git
+[submodule "currr"]
+	path = currr
+	url = git@github.com:mikedecr/post_currr.git
