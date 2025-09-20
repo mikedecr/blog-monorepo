@@ -25,3 +25,6 @@
 [submodule "currr"]
 	path = currr
 	url = git@github.com:mikedecr/post_currr.git
+[submodule "delayplyr"]
+	path = delayplyr
+	url = git@github.com:mikedecr/post_delayplyr.git
