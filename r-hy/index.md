@@ -67,7 +67,7 @@ Other than that, our data types are what you know from basic Python.
 (set.union #{"A" "B"} #{"B" "C"})
 ```
 
-    {'B', 'A', 'C'}
+    {'B', 'C', 'A'}
 
 ``` hy
 ; dicts
@@ -82,7 +82,7 @@ We already said we wanted functions, so here are some functional primitives:
 
 - operators for sequences / iterables (`first`, `second`, `last`, `nth`)
 - higher-order functions (`map`, `filter`, `reduce`)
-- functions that return other functions. Composing functions with `compose`, fixing argumetns with `curry`, and flipping arguments with `flip`
+- functions that return other functions. Composing functions with `compose`, fixing arguments with `curry`, and flipping arguments with `flip`
 
 Ok let's get started on the functions that were implemented in the original blog post.
 
@@ -101,7 +101,7 @@ Translated:
 - map `fn` over each element of `x`, this returns a generator.
 - materialize the yielded values into a list
 
-Or we can be more deranged and define it as a composition of function.
+Or we can be more deranged and define it as a composition of functions.
 
 ``` hy
 (import toolz [compose flip])
