@@ -29,12 +29,12 @@ Actually let's take a second to learn the Hy language.
 - define a function with `(defn fn-name [arg1 arg2] (do-something-to arg1 arg2))`
 - assign a value to a variable with `(setv name value)`
 
-There is not much you will need to know for this.
+There is not much more you will need to know for this.
 Lisps are famous for having essentially zero syntax.
 The main exception being the use of quotes as data structures for manipulating the language itself ("code as data"), similar to the use of quotation in R (Python has no equivalent).
 We will not be doing any of that stuff though.
 
-Other than that, our data environment everything you know from Python.
+Other than that, our data types are what you know from basic Python.
 
 ```{hy}
 ; a value
