@@ -1,0 +1,213 @@
+---
+title: "Hy experiments"
+author: "Michael DeCrescenzo"
+date: "2026-05-31"
+jupyter: hy
+---
+
+I encountered a blog post by Jonathan Carroll making the argument that certain desirable operations are more naturally expressed in R functions than in Python's "idioms".
+This is partly because R assumes you are doing data analysis, so it provides more of those APIs first class.
+But it's also because R is more functional, and Python is more object-oriented and procedural.
+
+Although I have basically zero interest in R anymore[^ggplot], I share the desire for something in Python to [please be a normal function](https://mikedecr.computer/blog/sugar-free-dict-union/) instead of a procedural or object-oriented dance.
+So let's take Jonathan's work to make these Python routines functional, and make them even more functional (evilly).
+
+[^ggplot]: `ggplot` remains the GOAT though, but that's about the design more than R. `ggplot` as an idea doesn't need R at all.
+
+
+## We will do this with Hy: the Lisp that generates Python
+
+We can agree that we like functions, so let's make some functions :)
+
+Hy is a Lisp, which means it is fundamentally expressed in "prefix form" expressions: `(fn arg1 arg2)`.
+Actually let's take a second to learn the Hy language.
+
+- the expression `1` evaluates to `1`.
+- call a function by wrapping it in parens: `(fn arg1 arg2)`
+- define a function with `(defn fn-name [arg1 arg2] (do-something-to arg1 arg2))`
+- assign a value to a variable with `(setv name value)`
+
+There is not much you will need to know for this.
+Lisps are famous for having essentially zero syntax.
+The main exception being the use of quotes as data structures for manipulating the language itself ("code as data"), similar to the use of quotation in R (Python has no equivalent).
+We will not be doing any of that stuff though.
+
+Other than that, our data environment everything you know from Python.
+
+```{hy}
+; a value
+"Some string"
+
+; binary operators
+(+ 1 2)
+
+; lists
+["A" "B"]
+
+; tuples
+#("A" "B")
+
+; sets
+(set.union #{"A" "B"} #{"B" "C"})
+
+; dicts
+(dict.get {"A" 1 "B" 2} "C" "fallback")
+```
+
+I will now assert: You know enough about Hy to read this post just fine.
+The only other thing it helps to know are some atomic units for functional data manipulation.
+We already said we wanted functions, so here are some functional primitives:
+
+- operators for sequences / iterables (`first`, `second`, `last`, `nth`)
+- higher-order functions (`map`, `filter`, `reduce`)
+- functions that return other functions. Composing functions with `compose`, fixing argumetns with `curry`, and flipping arguments with `flip`
+
+Ok let's get started on the functions that were implemented in the original blog post.
+
+
+### `sapply`
+
+Apply a function to _some container_ and return a list.
+
+We can define this as a function declaration:
+
+```{hy}
+(defn sapply [x fn] (list (map fn x)))
+```
+
+Translated:
+
+- map `fn` over each element of `x`, this returns a generator.
+- materialize the yielded values into a list
+
+Or we can be more deranged and define it as a composition of function.
+
+```{hy}
+(import toolz [compose flip])
+
+(setv sapply (compose list (flip map)))
+```
+
+- `map`'s first argument is the function, but `sapply` wants the data first. So we `flip map`.
+- we compose the flipped map with `list`.
+- This gives a new function that is waiting for the user to pass data.
+
+The example in the post is squaring a list of numbers.
+
+
+
+```{hy}
+; being normal
+(defn square [x] (* x x))
+
+; being deranged
+(import toolz [curry])
+(setv square (curry (flip pow) 2))
+```
+
+Awesome, now we can `sapply` the `square` function over the list of numbers.
+
+```{hy}
+(sapply [2 3 4 5] square)
+```
+
+### `table`
+
+Counting the number of occurrences of each element in a list.
+
+```{hy}
+(import collections [Counter])
+
+(setv table (compose dict sorted dict.items Counter))
+
+; tabulate a tuple of chars
+(table #("b" "a" "c" "a" "b" "a"))
+```
+
+toolz also has `frequencies` function.
+
+
+### `which`
+
+Return indices of truthy values in an iterable container.
+
+This one is actually a bit special because I use the "threading macro" `->`.
+Even if you don't know Hy, if you know R, you already know how to read this.
+It's basically the pipe operator in prefix form: `(-> data fn1 fn2)` to pass `data` as the first arg to `fn1`, then the result to `fn2`.
+
+```{hy}
+(import toolz [first second])
+(require hyrule [->])
+
+(defn which [lst]
+  (-> lst
+    (enumerate)
+    ((curry filter (compose bool second)))
+    ((curry map first))
+    (list)))
+
+(which [False False True False True])
+```
+
+The only tough bit is the logic of the `which` function itself.
+We...
+
+- summon a generator of `(index, value)` tuples with `enumerate`.
+- filter that generator where the second arg is `True` (in Python, `bool(True) is True`).
+- get the first value (the index) out of every tuple with a True element
+- listify
+
+This functional programming stuff is easy!
+
+
+### `nchar`
+
+Number of chars in ever string in a list of strings.
+
+```{hy}
+(setv nchar (compose list (curry map len)))
+
+(nchar ["these" "all" "have" "different" "lengths"])
+```
+
+
+### `list.files`
+
+```{hy}
+(import pathlib [Path])
+
+(setv list-files (compose list Path.iterdir Path))
+
+(list-files ".")
+```
+
+
+### `cumsum`
+
+This requires a bit of an explanation, but it's totally understandable in functional primitives.
+We use `reduce` to accumulate a value over a list.
+The value that we accumulate is itself a list... and the binary operation is between a list and a value: append to the list the sum of the value and the last element of the list.
+
+```{hy}
+(import functools [reduce])
+(import toolz [last])
+
+; a binary operation extends a list by adding a val to last element
+(defn append-rolling-sum [lst x]
+  (if (not lst) (return [x]) 
+    (list.append lst (+ x (last lst))))
+    (return lst))
+
+; cumsum is a reduction of this fn over a list w/ empty init
+(defn cumsum [x] (reduce append-rolling-sum x []))
+
+(cumsum [1 2 3 4 5])
+```
+
+or if if this hurts too much, `itertools.accumulate` is already a cumsum generator.
+
+```{hy}
+(import itertools [accumulate])
+(defn cumsum [x] (list (accumulate x)))
+(cumsum [1 2 3 4 5])
+```
