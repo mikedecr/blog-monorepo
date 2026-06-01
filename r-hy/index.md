@@ -1,8 +1,10 @@
 ---
-title: Hy experiments
+title: Hy translations of Python translations of R functions
 author: Michael DeCrescenzo
 date: '2026-05-31'
 jupyter: hy
+execute:
+  fenced: true
 ---
 
 
@@ -35,19 +37,39 @@ Other than that, our data environment everything you know from Python.
 ``` hy
 ; a value
 "Some string"
+```
 
+    'Some string'
+
+``` hy
 ; binary operators
 (+ 1 2)
+```
 
+    3
+
+``` hy
 ; lists
 ["A" "B"]
+```
 
+    ['A', 'B']
+
+``` hy
 ; tuples
 #("A" "B")
+```
 
+    ('A', 'B')
+
+``` hy
 ; sets
 (set.union #{"A" "B"} #{"B" "C"})
+```
 
+    {'A', 'B', 'C'}
+
+``` hy
 ; dicts
 (dict.get {"A" 1 "B" 2} "C" "fallback")
 ```
@@ -64,7 +86,7 @@ We already said we wanted functions, so here are some functional primitives:
 
 Ok let's get started on the functions that were implemented in the original blog post.
 
-### `sapply`
+## `sapply`
 
 Apply a function to *some container* and return a list.
 
@@ -110,7 +132,7 @@ Awesome, now we can `sapply` the `square` function over the list of numbers.
 
     [4, 9, 16, 25]
 
-### `table`
+## `table`
 
 Counting the number of occurrences of each element in a list.
 
@@ -127,7 +149,7 @@ Counting the number of occurrences of each element in a list.
 
 toolz also has `frequencies` function.
 
-### `which`
+## `which`
 
 Return indices of truthy values in an iterable container.
 
@@ -161,7 +183,7 @@ We...
 
 This functional programming stuff is easy!
 
-### `nchar`
+## `nchar`
 
 Number of chars in ever string in a list of strings.
 
@@ -173,7 +195,7 @@ Number of chars in ever string in a list of strings.
 
     [5, 3, 4, 9, 7]
 
-### `list.files`
+## `list.files`
 
 ``` hy
 (import pathlib [Path])
@@ -183,9 +205,9 @@ Number of chars in ever string in a list of strings.
 (list-files ".")
 ```
 
-    [PosixPath('hy_kernel'), PosixPath('.undo'), PosixPath('hy_files'), PosixPath('uv.lock'), PosixPath('pyproject.toml'), PosixPath('index.qmd'), PosixPath('index_files'), PosixPath('README.md'), PosixPath('.venv'), PosixPath('.python-version'), PosixPath('.git'), PosixPath('index.quarto_ipynb'), PosixPath('lst')]
+    [PosixPath('hy_kernel'), PosixPath('r_hy.egg-info'), PosixPath('uv.lock'), PosixPath('pyproject.toml'), PosixPath('index.qmd'), PosixPath('README.md'), PosixPath('.gitignore'), PosixPath('index.md'), PosixPath('.venv'), PosixPath('index.quarto_ipynb')]
 
-### `cumsum`
+## `cumsum`
 
 This requires a bit of an explanation, but it's totally understandable in functional primitives.
 We use `reduce` to accumulate a value over a list.

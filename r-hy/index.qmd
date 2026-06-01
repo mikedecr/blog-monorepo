@@ -1,8 +1,10 @@
 ---
-title: "Hy experiments"
+title: "Hy translations of Python translations of R functions"
 author: "Michael DeCrescenzo"
 date: "2026-05-31"
 jupyter: hy
+execute:
+    fenced: true
 ---
 
 I encountered a blog post by Jonathan Carroll making the argument that certain desirable operations are more naturally expressed in R functions than in Python's "idioms".
@@ -37,19 +39,29 @@ Other than that, our data environment everything you know from Python.
 ```{hy}
 ; a value
 "Some string"
+```
 
+```{hy}
 ; binary operators
 (+ 1 2)
+```
 
+```{hy}
 ; lists
 ["A" "B"]
+```
 
+```{hy}
 ; tuples
 #("A" "B")
+```
 
+```{hy}
 ; sets
 (set.union #{"A" "B"} #{"B" "C"})
+```
 
+```{hy}
 ; dicts
 (dict.get {"A" 1 "B" 2} "C" "fallback")
 ```
@@ -65,7 +77,7 @@ We already said we wanted functions, so here are some functional primitives:
 Ok let's get started on the functions that were implemented in the original blog post.
 
 
-### `sapply`
+## `sapply`
 
 Apply a function to _some container_ and return a list.
 
@@ -111,7 +123,7 @@ Awesome, now we can `sapply` the `square` function over the list of numbers.
 (sapply [2 3 4 5] square)
 ```
 
-### `table`
+## `table`
 
 Counting the number of occurrences of each element in a list.
 
@@ -127,7 +139,7 @@ Counting the number of occurrences of each element in a list.
 toolz also has `frequencies` function.
 
 
-### `which`
+## `which`
 
 Return indices of truthy values in an iterable container.
 
@@ -160,7 +172,7 @@ We...
 This functional programming stuff is easy!
 
 
-### `nchar`
+## `nchar`
 
 Number of chars in ever string in a list of strings.
 
@@ -171,7 +183,7 @@ Number of chars in ever string in a list of strings.
 ```
 
 
-### `list.files`
+## `list.files`
 
 ```{hy}
 (import pathlib [Path])
@@ -182,7 +194,7 @@ Number of chars in ever string in a list of strings.
 ```
 
 
-### `cumsum`
+## `cumsum`
 
 This requires a bit of an explanation, but it's totally understandable in functional primitives.
 We use `reduce` to accumulate a value over a list.
