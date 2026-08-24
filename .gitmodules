@@ -28,3 +28,6 @@
 [submodule "delayplyr"]
 	path = delayplyr
 	url = git@github.com:mikedecr/post_delayplyr.git
+[submodule "sugar-free-python-ggplot"]
+	path = sugar-free-python-ggplot
+	url = git@github.com:mikedecr/sugar-free-python-ggplot.git
